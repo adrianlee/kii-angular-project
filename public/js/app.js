@@ -4,6 +4,7 @@
 // Declare app level module which depends on filters, and services
 angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 'myApp.controllers', 'HashBangURLs']).
   config(['$routeProvider', function($routeProvider) {
+    $routeProvider.when('/', {templateUrl: 'template/home.html', controller: 'HomeCtrl'});
     $routeProvider.when('/home', {templateUrl: 'template/home.html', controller: 'HomeCtrl'});
     $routeProvider.when('/classes', {templateUrl: 'template/classes.html', controller: 'ClassCtrl'});
     $routeProvider.when('/teach', {templateUrl: 'template/teach.html', controller: 'TeachCtrl'});
@@ -21,7 +22,34 @@ angular.module('HashBangURLs', []).config(['$locationProvider', function($locati
 
 /* Controllers */
 angular.module('myApp.controllers', []).
-  controller('HomeCtrl', [function() {
+  controller('MainCtrl', ['$rootScope', '$location', function($rootScope, $location) {
+    $rootScope.currentUser = KiiUser.getCurrentUser();
+
+    console.log($rootScope.currentUser);
+
+    if ($rootScope.currentUser) {
+      $rootScope.currentUser.refresh({
+        success: function (user) {
+          console.log(user);
+        },
+        failure: function (user, error) {
+          console.log(error);
+        }
+      });
+    }
+
+    $rootScope.logout = function () {
+      console.log("logout");
+
+      // Logout
+      if (localStorage["access_token"]) {
+        delete localStorage["access_token"];
+      }
+
+      $location.path('/');
+    };
+  }])
+  .controller('HomeCtrl', ['$scope', function($scope) {
 
   }])
   .controller('ClassCtrl', ['$scope', function($scope) {
@@ -50,6 +78,10 @@ angular.module('myApp.controllers', []).
           // Print some info to the log
           console.log("User authenticated!");
           console.log(theUser);
+
+          var access_token = theUser.getAccessToken();
+          console.log(access_token)
+          localStorage['access_token'] = access_token;
         },
         // Called on a failed authentication
         failure: function(theUser, errorString) {
@@ -58,6 +90,22 @@ angular.module('myApp.controllers', []).
         }
       });
     };
+
+    // $scope.facebookLogin = function () {
+    //   // SNS Registration
+    //   var loginCallbacks = {
+    //     // successfully connected to facebook
+    //     success : function(user, network) {
+    //       console.log("Connected user " + JSON.stringify(user) + " to network: " + network);
+    //     },
+    //     // unable to connect
+    //     failure : function(user, network, error) {
+    //       console.log("Unable to connect to " + network + ". Reason: " + error);
+    //     }
+    //   };
+
+    //   KiiSocialConnect.logIn(KiiSocialNetworkName.FACEBOOK, null, loginCallbacks);
+    // }
   }])
   .controller('SignupCtrl', ['$scope', function($scope) {
     $scope.submit = function (input) {
