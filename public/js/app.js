@@ -76,6 +76,7 @@ angular.module('myApp.controllers', []).
     };
   }])
   .controller('HomeCtrl', ['$rootScope', '$scope', function($rootScope, $scope) {
+    // $rootScope.currentUser = KiiUser.getCurrentUser();
     if (!$rootScope.$$phase) {
       $rootScope.$digest();
     }
@@ -106,16 +107,28 @@ angular.module('myApp.controllers', []).
           console.log("User authenticated!");
           console.log(theUser);
 
-          $rootScope.currentUser = theUser;
+          theUser.refresh({
+            success: function(theRefreshedUser) {
+              // do something with the refreshed user
+              delete theRefreshedUser["_password"];
+              $rootScope.currentUser = theRefreshedUser;
 
-          // Save user access token
-          localStorage['access_token'] = theUser.getAccessToken();
+              // Save user access token
+              localStorage['access_token'] = theUser.getAccessToken();
 
-          $location.path('/');
+              $location.path('/');
 
-          if(!$rootScope.$$phase) {
-            $rootScope.$digest();
-          }
+              if(!$rootScope.$$phase) {
+                $rootScope.$digest();
+              }
+            },
+
+            failure: function(theUser, anErrorString) {
+              // do something with the error response
+            }
+          });
+
+
         },
         // Called on a failed authentication
         failure: function(theUser, errorString) {
