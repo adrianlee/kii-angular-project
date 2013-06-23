@@ -9,7 +9,10 @@ angular.module('myApp', ['myApp.filters', 'myApp.services', 'myApp.directives', 
     $routeProvider.when('/teach', {templateUrl: 'template/teach.html', controller: 'TeachCtrl'});
     $routeProvider.when('/faq', {templateUrl: 'template/faq.html', controller: 'FAQCtrl'});
     $routeProvider.when('/login', {templateUrl: 'template/login.html', controller: 'LoginCtrl'});
-    $routeProvider.otherwise({redirectTo: '/home'});
+    $routeProvider.when('/signup', {templateUrl: 'template/signup.html', controller: 'SignupCtrl'});
+    $routeProvider.when('/reset_password', {templateUrl: 'template/reset_password.html', controller: 'ResetCtrl'});
+    $routeProvider.when('/404', {templateUrl: 'template/404.html', controller: '404Ctrl'});
+    $routeProvider.otherwise({redirectTo: '/404'});
   }]);
 
 angular.module('HashBangURLs', []).config(['$locationProvider', function($location) {
@@ -33,6 +36,74 @@ angular.module('myApp.controllers', []).
 
   }])
   .controller('FAQCtrl', [function() {
+
+  }])
+  .controller('LoginCtrl', ['$scope', function($scope) {
+    $scope.submit = function (input) {
+      if (!input || !input.user || !input.password) {
+        return console.log("Invalid");
+      }
+
+      KiiUser.authenticate(input.user, input.password, {
+        // Called on successful registration
+        success: function(theUser) {
+          // Print some info to the log
+          console.log("User authenticated!");
+          console.log(theUser);
+        },
+        // Called on a failed authentication
+        failure: function(theUser, errorString) {
+          // Print some info to the log
+          console.log("Error authenticating: " + errorString);
+        }
+      });
+    };
+  }])
+  .controller('SignupCtrl', ['$scope', function($scope) {
+    $scope.submit = function (input) {
+      if (!input || !input.email || !input.password || !input.username) {
+        return console.log("Invalid");
+      }
+
+      // if (input.password !== input.password2) {
+      //   return console.log("Password not the same")
+      // }
+
+      var user = KiiUser.userWithEmailAddressAndUsername(input.email, input.username, input.password);
+
+      user.register({
+        // Called on successful registration
+        success: function(theUser) {
+          // Print some info to the log
+          console.log("User registered!");
+          console.log(theUser);
+        },
+        // Called on a failed registration
+        failure: function(theUser, errorString) {
+          // Print some info to the log
+          console.log("Error registering: " + errorString);
+        }
+      });
+
+    };
+  }])
+  .controller('ResetCtrl', ['$scope', function($scope) {
+    $scope.submit = function (input) {
+      if (!input || !input.email ) {
+        return console.log("Invalid");
+      }
+
+      KiiUser.resetPassword(input.email, {
+        success: function() {
+          Kii.logger("Reset password");
+        },
+        failure: function(error) {
+          Kii.logger("Error resetting password: " + error);
+        }
+      });
+    };
+  }])
+  .controller('404Ctrl', [function() {
 
   }]);
 
