@@ -22,23 +22,48 @@ angular.module('HashBangURLs', []).config(['$locationProvider', function($locati
 
 /* Controllers */
 angular.module('myApp.controllers', []).
-  controller('MainCtrl', ['$rootScope', '$location', function($rootScope, $location) {
-    $rootScope.currentUser = KiiUser.getCurrentUser();
+  controller('MainCtrl', ['$rootScope', '$scope', '$location', function($rootScope, $scope, $location) {
+    // Initialize
+    $(document).ready(function() {
 
-    console.log($rootScope.currentUser);
+      // Initialize Kii App
+      Kii.initializeWithSite("18d06010", "1cac8b80304297823dbb773d2ddd379d", KiiSite.JP);
 
-    if ($rootScope.currentUser) {
-      $rootScope.currentUser.refresh({
-        success: function (user) {
-          console.log(user);
-        },
-        failure: function (user, error) {
-          console.log(error);
+      // Get current user
+      var currentUser = KiiUser.getCurrentUser();
+
+      // If user not logged in
+      if (!currentUser) {
+        var access_token = localStorage['access_token'];
+
+        // If no access token exists in web storage
+        if (access_token) {
+          KiiUser.authenticateWithToken(access_token, {
+            // Called on successful registration
+            success: function(theUser) {
+              console.log("User authenticated!");
+              console.log(theUser);
+
+              // update currentUser
+              $rootScope.currentUser = theUser;
+
+              // Digest
+              if(!$scope.$$phase) {
+                $scope.$digest();
+              }
+            },
+            // Called on a failed authentication
+            failure: function(theUser, errorString) {
+              // Print some info to the log
+              console.log("Error authenticating: " + errorString);
+            }
+          });
         }
-      });
-    }
+      }
+    });
 
-    $rootScope.logout = function () {
+    // Functions
+    $scope.logout = function () {
       console.log("logout");
 
       // Logout
@@ -47,16 +72,19 @@ angular.module('myApp.controllers', []).
       }
 
       $location.path('/');
+      window.location.reload();
     };
   }])
-  .controller('HomeCtrl', ['$scope', function($scope) {
-
+  .controller('HomeCtrl', ['$rootScope', '$scope', function($rootScope, $scope) {
+    if (!$rootScope.$$phase) {
+      $rootScope.$digest();
+    }
   }])
   .controller('ClassCtrl', ['$scope', function($scope) {
     $scope.title = "Title";
     $scope.description = "Description";
 
-    if(!$scope.$$phase) {
+    if (!$scope.$$phase) {
       $scope.$digest();
     }
   }])
@@ -66,7 +94,7 @@ angular.module('myApp.controllers', []).
   .controller('FAQCtrl', [function() {
 
   }])
-  .controller('LoginCtrl', ['$scope', function($scope) {
+  .controller('LoginCtrl', ['$rootScope', '$scope', '$location', function($rootScope, $scope, $location) {
     $scope.submit = function (input) {
       if (!input || !input.user || !input.password) {
         return console.log("Invalid");
@@ -75,13 +103,19 @@ angular.module('myApp.controllers', []).
       KiiUser.authenticate(input.user, input.password, {
         // Called on successful registration
         success: function(theUser) {
-          // Print some info to the log
           console.log("User authenticated!");
           console.log(theUser);
 
-          var access_token = theUser.getAccessToken();
-          console.log(access_token)
-          localStorage['access_token'] = access_token;
+          $rootScope.currentUser = theUser;
+
+          // Save user access token
+          localStorage['access_token'] = theUser.getAccessToken();
+
+          $location.path('/');
+
+          if(!$rootScope.$$phase) {
+            $rootScope.$digest();
+          }
         },
         // Called on a failed authentication
         failure: function(theUser, errorString) {

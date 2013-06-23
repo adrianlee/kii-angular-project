@@ -1,19 +1,23 @@
-<h3>Login</h3>
-<form>
-  <p>
-    Need an account? <a href="/signup">Sign up</a> to get started.
-    <br/>
-    Forgot your password? <a href="/reset_password">Reset your password</a> now.
-  </p>
-  <p>
-    <input type="text" data-ng-model="input.user" placeholder="Username or Email">
-  </p>
-  <p>
-    <input type="password" data-ng-model="input.password" placeholder="Password">
-  </p>
-  <p>
-    <button class="btn btn-default" data-ng-click="submit(input)">Login</button>
-  </p>
-</form>
+<div class="row">
+  <div class="col col-lg-12">
+    <h3>Login</h3>
+    <form>
+      <p>
+        Need an account? <a href="/signup">Sign up</a> to get started.
+        <br/>
+        Forgot your password? <a href="/reset_password">Reset your password</a> now.
+      </p>
+      <p>
+        <input type="text" data-ng-model="input.user" placeholder="Username or Email">
+      </p>
+      <p>
+        <input type="password" data-ng-model="input.password" placeholder="Password">
+      </p>
+      <p>
+        <button class="btn btn-default" data-ng-click="submit(input)">Login</button>
+      </p>
+    </form>
 
-<!-- <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button> -->
+    <!-- <fb:login-button show-faces="true" width="200" max-rows="1"></fb:login-button> -->
+  </div>
+</div>

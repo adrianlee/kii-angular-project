@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
+<html lang="en" data-ng-app="myApp">
 <head>
   <meta charset="utf-8" />
   <meta name="fragment" content="!" />
@@ -10,6 +10,10 @@
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/bootstrap.min.css" />
 
+  <script src="js/vendor/jquery.js"></script>
+  <script src="js/vendor/bootstrap.min.js"></script>
+  <script src="js/vendor/angular.min.js"></script>
+  <script src="js/vendor/KiiSDK 2.1 - HTML5 KiiSDK.js"></script>
   <script>
     window.fbAsyncInit = function() {
       // initialize the Kii SDK
@@ -41,9 +45,10 @@
       ref.parentNode.insertBefore(js, ref);
     }(document));
   </script>
+  <script src="js/app.js"></script>
 
 </head>
-<body ng-controller="MainCtrl">
+<body data-ng-cloak ng-controller="MainCtrl">
   <div id="fb-root"></div>
   <!-- Navigation -->
   <div class="navbar navbar-fixed-top">
@@ -62,9 +67,11 @@
           <li><a href="/classes">Classes</a></li>
           <li><a href="/teach">Teach</a></li>
           <li><a href="/faq">FAQ</a></li>
-          <li><a href="/login">Login</a></li>
-          <li><a data-ng-click="logout()">Logout</a></li>
+        </ul>
+        <ul class="nav navbar-nav pull-right">
           <!-- <li><a href="#">Settings</a></li> -->
+          <li data-ng-cloak data-ng-hide="currentUser"><a href="/login">Login</a></li>
+          <li data-ng-cloak data-ng-show="currentUser"><a data-ng-click="logout()">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -74,44 +81,5 @@
     <div data-ng-view></div>
     <!-- <div>Angular seed app: v<span app-version></span></div> -->
   </div>
-
-
-  <script src="js/vendor/jquery.js"></script>
-  <script src="js/vendor/bootstrap.min.js"></script>
-  <script src="js/vendor/KiiSDK 2.1 - HTML5 KiiSDK.js"></script>
-  <script>
-
-    $(document).ready(function() {
-      // Initialize Kii App
-      Kii.initializeWithSite("18d06010", "1cac8b80304297823dbb773d2ddd379d", KiiSite.JP);
-
-      var currentUser = KiiUser.getCurrentUser();
-
-      // If user not logged in
-      if (!currentUser) {
-        var access_token = localStorage['access_token'];
-
-        // If no access token exists in web storage
-        if (access_token) {
-          KiiUser.authenticateWithToken(access_token, {
-            // Called on successful registration
-            success: function(theUser) {
-              // Print some info to the log
-              console.log("User authenticated!");
-              console.log(theUser);
-            },
-            // Called on a failed authentication
-            failure: function(theUser, errorString) {
-              // Print some info to the log
-              console.log("Error authenticating: " + errorString);
-            }
-          });
-        }
-      }
-    });
-
-  </script>
-  <script src="js/vendor/angular.min.js"></script>
-  <script src="js/app.js"></script>
 </body>
 </html>

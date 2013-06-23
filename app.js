@@ -12,7 +12,7 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: 86400000 }));
 app.use(app.router);
 app.use(function (req, res) {
   res.sendfile(__dirname + "/index.html");
