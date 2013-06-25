@@ -17,7 +17,7 @@
   <script>
     window.fbAsyncInit = function() {
       // initialize the Kii SDK
-      Kii.initialize('18d06010', '1cac8b80304297823dbb773d2ddd379d');
+      // Kii.initialize('18d06010', '1cac8b80304297823dbb773d2ddd379d');
 
       // set options required by Facebook's API
       var options = {
@@ -28,9 +28,7 @@
       };
 
       // Initialize the SNS for later use
-      KiiSocialConnect.setupNetwork(
-        KiiSocialNetworkName.FACEBOOK,
-        171752796334595, null, options);
+      KiiSocialConnect.setupNetwork(KiiSocialNetworkName.FACEBOOK, "171752796334595", null, options);
 
       // other code here
     };
@@ -71,6 +69,7 @@
         <ul class="nav navbar-nav pull-right">
           <!-- <li><a href="#">Settings</a></li> -->
           <li data-ng-cloak data-ng-hide="currentUser"><a href="/login">Login</a></li>
+          <li data-ng-cloak data-ng-show="currentUser"><a data-ng-bind="currentUser.getUsername()"></a></li>
           <li data-ng-cloak data-ng-show="currentUser"><a data-ng-click="logout()">Logout</a></li>
         </ul>
       </div>

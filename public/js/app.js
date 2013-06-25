@@ -76,7 +76,38 @@ angular.module('myApp.controllers', []).
     };
   }])
   .controller('HomeCtrl', ['$rootScope', '$scope', function($rootScope, $scope) {
-    // $rootScope.currentUser = KiiUser.getCurrentUser();
+    $scope.linkFacebook = function () {
+      var linkCallbacks = {
+        // successfully connected to facebook
+        success : function(user, network) {
+          console.log("Linked user " + user + " to network: " + network);
+        },
+        // unable to connect
+        failure : function(user, network, error) {
+          console.log(error);
+          console.log(network);
+          console.log("Unable to link to " + network + ". Reason: " + error);
+        }
+      };
+
+      KiiSocialConnect.linkCurrentUserWithNetwork(KiiSocialNetworkName.FACEBOOK, null, linkCallbacks);
+    };
+
+    $scope.unlinkFacebook = function () {
+      var unlinkCallbacks = {
+        success: function(user, network) {
+          console.log("Unlinked user " + user + " from network: " + network);
+        },
+        failure: function(user, network, error) {
+          console.log(error);
+          console.log(network);
+          console.log("Unable to unlink from " + network + ". Reason: " + error);
+        }
+      };
+
+      KiiSocialConnect.unLinkCurrentUserFromNetwork(KiiSocialNetworkName.FACEBOOK, unlinkCallbacks);
+    };
+
     if (!$rootScope.$$phase) {
       $rootScope.$digest();
     }
@@ -137,22 +168,6 @@ angular.module('myApp.controllers', []).
         }
       });
     };
-
-    // $scope.facebookLogin = function () {
-    //   // SNS Registration
-    //   var loginCallbacks = {
-    //     // successfully connected to facebook
-    //     success : function(user, network) {
-    //       console.log("Connected user " + JSON.stringify(user) + " to network: " + network);
-    //     },
-    //     // unable to connect
-    //     failure : function(user, network, error) {
-    //       console.log("Unable to connect to " + network + ". Reason: " + error);
-    //     }
-    //   };
-
-    //   KiiSocialConnect.logIn(KiiSocialNetworkName.FACEBOOK, null, loginCallbacks);
-    // }
   }])
   .controller('SignupCtrl', ['$scope', function($scope) {
     $scope.submit = function (input) {
@@ -215,7 +230,7 @@ angular.module('myApp.filters', []).
   filter('interpolate', ['version', function(version) {
     return function(text) {
       return String(text).replace(/\%VERSION\%/mg, version);
-    }
+    };
   }]);
 
 /* Services */
